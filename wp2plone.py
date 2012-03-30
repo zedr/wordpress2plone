@@ -74,7 +74,7 @@ try:
     setSite(getattr(app, PLONE_SITENAME))
 except AttributeError:
     print("Plone site '%s' does not exist." % PLONE_SITENAME
-          "You must use a valid and existing Plone site id as PLONE_SITENAME "
+          "You must use a valid and existing Plone site id as PLONE_SITENAME"
           " in the configuration section of this script.")
     print ("Exiting.")
     sys.exit(-1)
@@ -89,6 +89,13 @@ app = spoofRequest(app)
 plone = app.unrestrictedTraverse(PLONE_SITENAME)
 plone.setupCurrentSkin(app.REQUEST)
 admin = app.acl_users.getUserById(MANAGER_ID)
+if not admin:
+    print("A Zope manager with id '%s' does not exist. " % MANAGER_ID
+          "You must use a valid and existing Zope manager id as MANAGER_ID"
+          " in the configuration section of this script.")
+    print ("Exiting.")
+    sys.exit(-1)
+
 newSecurityManager(None, admin)
 
 def fix_text(text):
