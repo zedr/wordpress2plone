@@ -40,8 +40,8 @@ The script will create a temporary directory (e.g.
 "wp-import-wp-import-2012-03-30t13-28-12-180396" and start creating content
 inside it.
 
-IMPORTANT! Run the script first on a staging or development server.
-           DO NOT blindly run this on a production instance!
+IMPORTANT! Run the script first on a staging or development server
+DO NOT blindly run this on a production instance!
 
 Run with:
 
@@ -51,8 +51,8 @@ Run with:
 Credits
 -------
 
-davisagli (http://www.davisagli.com)
-zedr (http://github.com/zedr)
+    - davisagli (http://www.davisagli.com)
+    - zedr (http://github.com/zedr)
 
 
 License and warning
