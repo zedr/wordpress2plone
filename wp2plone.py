@@ -141,7 +141,8 @@ class Importer(object):
 
     def _set_up(self):
         self.normalizer = queryUtility(IIDNormalizer)
-        self._container = self.target if self.target else self._mk_container()
+        t_name = self.target
+        self._container = self._ctxt[t_name] if t_name else self._mk_container()
         self._connect()
 
     def _mk_container(self):
