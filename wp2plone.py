@@ -70,7 +70,14 @@ MANAGER_ID = 'admin'
 # --------------------------------------------------------------------------- #
 
 
-setSite(getattr(app, PLONE_SITENAME))
+try:
+    setSite(getattr(app, PLONE_SITENAME))
+except AttributeError:
+    print("Plone site '%s' does not exist." % PLONE_SITENAME
+          "You must use a valid and existing Plone site id as PLONE_SITENAME "
+          " in the configuration section of this script.")
+    print ("Exiting.")
+    sys.exit(-1)
 
 def spoofRequest(app):
     _policy=PermissiveSecurityPolicy()
