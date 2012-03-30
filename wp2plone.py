@@ -265,10 +265,6 @@ print("The importer has finished all operations.")
 # End with a Python prompt
 # ----------------------------------------------------------------------------#
 
-try:
-    bpython.embed(locals_=locals())
-except AttributeError:
-    # is a tty?
-    __import__("code").interact(
-            banner=""" Post-migration Python prompt. Control+d to exit. """, local=globals()
-    )
+__import__("code").interact(
+        banner=""" Post-migration Python prompt. Control+d to exit. """, local=globals()
+)
