@@ -77,7 +77,7 @@ except AttributeError:
           "You must use a valid and existing Plone site id as PLONE_SITENAME"
           " in the configuration section of this script.")
     print ("Exiting.")
-    sys.exit(-1)
+    sys.exit(1)
 
 def spoofRequest(app):
     _policy=PermissiveSecurityPolicy()
@@ -94,7 +94,7 @@ if not admin:
           "You must use a valid and existing Zope manager id as MANAGER_ID"
           " in the configuration section of this script.")
     print ("Exiting.")
-    sys.exit(-1)
+    sys.exit(1)
 
 newSecurityManager(None, admin)
 
