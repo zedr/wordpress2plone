@@ -38,7 +38,7 @@ from Testing.makerequest import makerequest
 
 
 # --------------------------------------------------------------------------- #
-# Start configuring here
+# Begin configuring here
 # --------------------------------------------------------------------------- #
 
 # MySQL database connection parameters
@@ -73,30 +73,33 @@ MANAGER_ID = 'admin'
 try:
     setSite(getattr(app, PLONE_SITENAME))
 except AttributeError:
-    print("Plone site '%s' does not exist." % PLONE_SITENAME
+    print("Plone site '{0}' does not exist. ".format(PLONE_SITENAME) +
           "You must use a valid and existing Plone site id as PLONE_SITENAME"
           " in the configuration section of this script.")
-    print ("Exiting.")
+    print("Exiting.")
     sys.exit(1)
 
+
 def spoofRequest(app):
-    _policy=PermissiveSecurityPolicy()
-    _oldpolicy=setSecurityPolicy(_policy)
+    _policy = PermissiveSecurityPolicy()
+    _oldpolicy = setSecurityPolicy(_policy)
     newSecurityManager(None, OmnipotentUser().__of__(app.acl_users))
     return makerequest(app)
+
 
 app = spoofRequest(app)
 plone = app.unrestrictedTraverse(PLONE_SITENAME)
 plone.setupCurrentSkin(app.REQUEST)
 admin = app.acl_users.getUserById(MANAGER_ID)
 if not admin:
-    print("A Zope manager with id '%s' does not exist. " % MANAGER_ID
+    print("A Zope manager with id '{0}' does not exist. ".format(MANAGER_ID) +
           "You must use a valid and existing Zope manager id as MANAGER_ID"
           " in the configuration section of this script.")
     print ("Exiting.")
     sys.exit(1)
 
 newSecurityManager(None, admin)
+
 
 def fix_text(text):
     """Fix the text and return it.
@@ -141,18 +144,18 @@ class Importer(object):
 
     def _set_up(self):
         self.normalizer = queryUtility(IIDNormalizer)
-        t_name = self.target
-        self._container = self._ctxt[t_name] if t_name else self._mk_container()
+        name = self.target
+        self._container = self._ctxt[name] if name else self._mk_container()
         self._connect()
 
     def _mk_container(self):
         target = "".join((
-            'wp-import', '-',
+            'wp-import',
+            '-',
             self.normalizer.normalize(datetime.now().isoformat()),
         ))
         context = self._ctxt
         container = context[context.invokeFactory('Folder', target)]
-
         return container
 
     def read_posts(self):
@@ -177,18 +180,18 @@ class Importer(object):
         comment_author_url, comment_date,
         CONVERT(comment_content USING latin1), user_id
         FROM wp_comments
-        WHERE comment_approved = '1' AND comment_type='';"""
+        WHERE comment_approved = '1' AND comment_type=''
+        ORDER BY comment_post_ID;"""
 
         headers = ['cid', 'name', 'email', 'url', 'date', 'text', '']
 
         cur = self._dbconn.cursor()
         cur.execute(stmt)
         rows = cur.fetchall()
-        results = [dict(zip(headers, row)) for row in rows]
 
-        print("Read %d Wordpress comments" % len(results))
+        print("Read %d Wordpress comments" % len(rows))
 
-        self._data['comments'] = results
+        self._data['comments'] = rows
 
     def read_all(self):
         self.read_posts()
@@ -223,8 +226,7 @@ class Importer(object):
     def write_comments(self):
         comments = self._data['comments']
 
-        for com in comments:
-            cid = com['cid']
+        for cid, name, email, url, date, text, _ in comments:
             posts = self._posts
             try:
                 post = posts[cid]
@@ -233,12 +235,12 @@ class Importer(object):
 
             conversation = IConversation(post)
 
-            date = DateTime(com['date']).asdatetime()
+            date = DateTime(date).asdatetime()
 
             comment = createObject('plone.Comment')
-            comment.text = fix_text(com['text'])
-            comment.author_name = comment.creator = com['name']
-            comment.author_email = com['email']
+            comment.text = fix_text(text)
+            comment.author_name = comment.creator = name
+            comment.author_email = email
             comment.creation_date = comment.modification_date = date
 
             conversation.addComment(comment)
@@ -267,5 +269,6 @@ print("The importer has finished all operations.")
 # ----------------------------------------------------------------------------#
 
 __import__("code").interact(
-        banner=""" Post-migration Python prompt. Control+d to exit. """, local=globals()
+    banner=""" Post-migration Python prompt. Control+d to exit. """,
+    local=globals()
 )
